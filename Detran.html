@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Buscador de Placa - Localidades Oeste e Centro-Oeste</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #000000;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  h2 {
+    color: #222;
+    margin-bottom: 20px;
+  }
+  form {
+    background: rgb(0, 0, 0);
+    padding: 20px 25px;
+    border-radius: 10px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  label {
+    font-weight: 600;
+    color: #444;
+  }
+  input[type="text"] {
+    padding: 10px 12px;
+    font-size: 16px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    transition: border-color 0.3s;
+  }
+  input[type="text"]:focus {
+    border-color: #2980b9;
+    outline: none;
+  }
+  select {
+    padding: 10px 12px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 2px solid #ccc;
+    cursor: pointer;
+  }
+  button {
+    background: #2980b9;
+    color: rgba(3, 11, 33, 0.713);
+    font-weight: 700;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background: #1f6391;
+  }
+  #resultado {
+    margin-top: 25px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1d6f;
+  }
+</style>
+</head>
+<body>
+
+<h2>Buscador de Placa</h2>
+<form id="formBusca" onsubmit="buscarPlaca(event)">
+  <label for="placa">Digite a placa:</label>
+  <input type="text" id="placa" name="placa" placeholder="ABC-1234" maxlength="8" pattern="[A-Za-z]{3}-?\d{4}" title="Formato ABC-1234" required />
+  
+  <label for="localidade">Selecione a localidade:</label>
+  <select id="localidade" name="localidade" required>
+    <option value="" disabled selected>Escolha uma localidade</option>
+    <option value="oeste">Oeste</option>
+    <option value="centro-oeste">Centro-Oeste</option>
+  </select>
+  
+  <button type="submit">Buscar</button>
+</form>
+
+<div id="resultado"></div>
+
+<script>
+  // Dados fictícios de placas válidas por localidade
+  const placasOeste = [
+  "BGF-0923", "MKT-7742", "LHD-1527", "JQW-3381", "NVA-6110",
+"PRL-8849", "CZX-0734", "HRG-6655", "EWO-3284", "UTI-4912",
+"GFD-7098", "XQL-8450", "DPU-6633", "VNY-2186", "BKO-9045",
+"TZR-2238", "MJP-0419", "AGC-5820", "KRD-3717", "ZEM-1032",
+"FBL-1997", "LSN-4018", "WQP-9284", "YAG-7516", "IUK-6805",
+"NCO-2147", "TRX-7701", "HMD-3199", "QWL-0300", "JUB-6406",
+"GXP-1053", "BTR-2281", "LQK-4973", "VCI-9900", "MHS-1832",
+"EYN-5429", "CJO-0195", "RWA-3004", "UPE-7398", "DOZ-8641",
+"AFN-5844", "HZQ-7715", "JVR-3458", "XSU-0082", "NML-1629",
+"BEX-4247", "YVC-3730", "TAI-2403", "LPM-9501", "QED-1190",
+"KUR-3014", "VXA-5677", "ZBQ-8239", "DIX-4126", "WRO-1342",
+"JEN-7783", "MOG-9051", "CGR-4276", "TRB-6905", "EJL-0160",
+"OUF-5112", "GZL-7024", "LHX-3899", "FAD-8708", "NYI-2682",
+"KBP-6241", "WTR-1573", "XDI-3467", "JKT-4500", "YWB-6976",
+"BQL-0324", "VLG-1895", "NZD-5506", "TXO-7728", "CPF-9213",
+"ZYA-2354", "QOM-4729", "HBI-6143", "KAV-8030", "LWT-1675",
+"FUE-5828", "RZO-3451", "OAC-9036", "IEM-7774", "EXB-2183",
+"DCL-0366", "URX-1609", "MPU-8917", "TCG-5290", "BBV-7748",
+"YRN-6015", "HAP-4423", "VET-3339", "NCR-1840", "JMI-9062",
+"KOX-0984", "ZIF-7763", "LEH-2167", "UAZ-8801", "MBD-4902"
+  ];
+
+  const placasCentroOeste = [
+  "JGA-2031", "JGB-4419", "JGC-7208", "JGD-1102", "JGE-5980",
+"JGF-8347", "JGG-6732", "JGH-4509", "JGI-0913", "JGJ-3796",
+"JAA-5501", "JAB-0983", "JAC-6140", "JAD-3327", "JAE-7655",
+"JAF-2098", "JAG-8991", "JAH-1445", "JAI-6373", "JAJ-8204",
+"KAA-7801", "KAB-9012", "KAC-2765", "KAD-4380", "KAE-6699",
+"KAF-5821", "KAG-0317", "KAH-3402", "KAI-1254", "KAJ-9632",
+"JZI-4520", "JZJ-8893", "JZK-6321", "JZL-9048", "JZM-1882",
+"JZN-5433", "JZO-7220", "JZP-0156", "JZQ-3778", "JZR-4489",
+"OAA-2901", "OAB-7602", "OAC-8431", "OAD-6115", "OAE-3570",
+"OAF-1296", "OAG-9830", "OAH-2054", "OAI-7019", "OAJ-5002",
+"HQA-0214", "HQB-3170", "HQC-7761", "HQD-8940", "HQE-5437",
+"HQF-6021", "HQG-4782", "HQH-9083", "HQI-2365", "HQJ-6690",
+"HTA-3142", "HTB-4091", "HTC-1420", "HTD-5209", "HTE-6817",
+"HTF-0983", "HTG-2455", "HTH-7108", "HTI-3140", "HTJ-8866",
+"NRB-9132", "NRC-0283", "NRD-6739", "NRE-5940", "NRF-1376",
+"NRG-8904", "NRH-2093", "NRI-6751", "NRJ-4827", "NRK-0211",
+"NRL-9328", "NRM-8410", "NRN-7633", "NRO-1904", "NRP-3142",
+"NRQ-5839", "NRR-9405", "NRS-1652", "NRT-3881", "NRU-0210",
+"NRV-8593", "NRW-6702", "NRX-1180", "NRY-7349", "ODZ-4108"
+
+  ];
+
+  function buscarPlaca(event) {
+    event.preventDefault();
+
+    const placaInput = document.getElementById('placa').value.toUpperCase().replace(/\s+/g, '');
+    const localidade = document.getElementById('localidade').value;
+
+    let resultado = document.getElementById('resultado');
+
+    const regexPlaca = /^[A-Z]{3}-\d{4}$/;
+    if (!regexPlaca.test(placaInput)) {
+      resultado.style.color = 'red';
+      resultado.textContent = "Formato inválido. Use o formato ABC-1234.";
+      return;
+    }
+
+    let listaPlacas = [];
+    if (localidade === "oeste") {
+      listaPlacas = placasOeste;
+    } else if (localidade === "centro-oeste") {
+      listaPlacas = placasCentroOeste;
+    } else {
+      resultado.style.color = 'red';
+      resultado.textContent = "Selecione uma localidade válida.";
+      return;
+    }
+
+    if (listaPlacas.includes(placaInput)) {
+      resultado.style.color = 'green';
+      resultado.textContent = `Placa ${placaInput} encontrada na localidade ${localidade.replace('-', ' ')}!`;
+    } else {
+      resultado.style.color = 'red';
+      resultado.textContent = `Placa ${placaInput} Coloque placa equivalente a região ${localidade.replace('-', ' ')}.`;
+    }
+  }
+</script>
+
+</body>
+</html>
